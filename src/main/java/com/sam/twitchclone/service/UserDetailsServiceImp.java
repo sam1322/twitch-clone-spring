@@ -1,7 +1,6 @@
 package com.sam.twitchclone.service;
 
 import com.sam.twitchclone.dao.postgres.repository.UserRepository;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsImp implements UserDetailsService {
+public class UserDetailsServiceImp implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
