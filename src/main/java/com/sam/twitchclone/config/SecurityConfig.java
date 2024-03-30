@@ -22,6 +22,7 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImp userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomExceptionHandler customExceptionHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,6 +41,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(
+                        e -> e.accessDeniedHandler(customExceptionHandler)
+                                .authenticationEntryPoint(customExceptionHandler))
+//                .exceptionHandling(
+//                        e -> e.accessDeniedHandler(customAccessDeniedHandler)
+//                                .authenticationEntryPoint(customAuthenticationEntryPoint))
+//
+//                        e -> e.accessDeniedHandler(
+//                                        (request, response, accessDeniedException)->response.setStatus(403)
+//                                )
+//                           .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+
                 .build();
     }
 
