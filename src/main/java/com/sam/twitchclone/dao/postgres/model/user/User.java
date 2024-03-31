@@ -1,5 +1,6 @@
 package com.sam.twitchclone.dao.postgres.model.user;
 
+import com.sam.twitchclone.dao.postgres.model.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,22 +20,28 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User implements UserDetails  {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name="first_name")
+    @Column(name = "first_name")
     private String firstName;
     private String lastName;
-//    private String username;
-    private String email ;
+    //    private String username;
+    private String email;
     private String password;
+    //    private ZonedDateTime createdTime;
+//    private ZonedDateTime updatedTime;
     private Instant createdTime;
     private Instant updatedTime;
 
     @Enumerated(value = EnumType.STRING)
     Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -42,7 +49,7 @@ public class User implements UserDetails  {
 
     @Override
     public String getUsername() {
-        return email ;
+        return email;
     }
 
     @Override
@@ -57,7 +64,7 @@ public class User implements UserDetails  {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return  true;
+        return true;
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,6 +24,8 @@ public class SecurityConfig {
     private final UserDetailsServiceImp userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomExceptionHandler customExceptionHandler;
+    private final CustomLogoutHandler logoutHandler;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,20 +33,29 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
 //                        req->req.requestMatchers("/login/**","/register/**")
-//                        req->req.requestMatchers("/api/v1/auth/login/**","/api/v1/auth/register/**")
-                        req -> req.requestMatchers("/api/v1/auth/**")
+                        req -> req.requestMatchers(
+                                        "/api/v1/auth/authenticate",
+                                        "/api/v1/auth/register"
+                                )
+//                        req -> req.requestMatchers("/api/v1/auth/**")
                                 .permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )
                 .userDetailsService(userDetailsService)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(
                         e -> e.accessDeniedHandler(customExceptionHandler)
                                 .authenticationEntryPoint(customExceptionHandler))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(l -> l.logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler(
+                                (request, response, authentication) -> SecurityContextHolder.clearContext()
+                        )
+                )
 //                .exceptionHandling(
 //                        e -> e.accessDeniedHandler(customAccessDeniedHandler)
 //                                .authenticationEntryPoint(customAuthenticationEntryPoint))
