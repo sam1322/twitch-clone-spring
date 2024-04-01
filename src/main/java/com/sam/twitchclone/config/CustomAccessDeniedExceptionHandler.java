@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class CustomExceptionHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
+public class CustomAccessDeniedExceptionHandler extends ResponseEntityExceptionHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
 
