@@ -1,6 +1,7 @@
 package com.sam.twitchclone.controller.auth.dto;
 
 import com.sam.twitchclone.constant.enums.SignUpEnum;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthenticationRequest {
-    @NonNull
+    @NotNull
     private SignUpEnum loginProvider;
     private String email;
     private String password;

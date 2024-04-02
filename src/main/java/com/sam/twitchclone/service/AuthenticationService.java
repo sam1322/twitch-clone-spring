@@ -55,34 +55,36 @@ public class AuthenticationService {
 //        }
         SignUpEnum loginProvider = request.getLoginProvider();
         String email = request.getEmail();
-        String firstName = request.getFirstName();
-        String lastName = request.getLastName();
+//        String firstName = request.getFirstName();
+//        String lastName = request.getLastName();
+
+        String userName = request.getUserName();
+        String userImage = request.getUserImage();
         String password = request.getPassword();
 
         if (loginProvider.equals(SignUpEnum.GOOGLE)) {
             String id_token = getIdTokenFromCode(request.getCode());
             GoogleIdToken idToken = VerifyIdToken(id_token);
             GoogleIdToken.Payload payload = idToken.getPayload();
-            email = payload.getEmail();
-            firstName = payload.getSubject();
-            password = cryptoUtil.encodePassword(UUID.randomUUID().toString().substring(0, 11));
-            if(payload.getEmailVerified() == false){
+            if(!payload.getEmailVerified()){
                 throw new IllegalArgumentException("Email not verified");
             }
+            email = payload.getEmail();
+            userName = (String) payload.getUnknownKeys().getOrDefault("name","User");
+            userImage = (String) payload.getUnknownKeys().getOrDefault("picture","");
+            password = cryptoUtil.encodePassword(UUID.randomUUID().toString().substring(0, 11));
+
         }
 
         if (userRepository.findByEmail(email).isPresent()) {
-//            return AuthenticationResponse.builder()
-//                    .message("User already exist")
-//                    .build();
             throw new IllegalArgumentException("User already exist");
         }
 
         Instant currentTime = timeUtil.getCurrentTime();
 
         User user = User.builder()
-                .firstName(firstName)
-                .lastName(lastName)
+                .userName(userName)
+                .userImage(userImage)
                 .createdTime(currentTime)
                 .updatedTime(currentTime)
                 .email(email)
@@ -103,14 +105,29 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        User user = userRepository.findByEmail(request.getEmail())
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws IOException {
+        String email = request.getEmail();
+
+        if (request.getLoginProvider().equals(SignUpEnum.GOOGLE)) {
+            String id_token = getIdTokenFromCode(request.getCode());
+            GoogleIdToken idToken = VerifyIdToken(id_token);
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            if(!payload.getEmailVerified()){
+                throw new IllegalArgumentException("Email not verified");
+            }
+            email = payload.getEmail();
+        }
+        else{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        }
+
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         log.info("generating token for login " + jwtToken);
@@ -233,11 +250,10 @@ public class AuthenticationService {
 
     private void revokeAllTokensByUser(User user, Instant currentTime) {
         List<Token> validTokenListByUser = tokenRepository.findAllValidTokenByUser(user.getId());
-        if (!validTokenListByUser.isEmpty()) {
+        if (!validTokenListByUser.isEmpty() && validTokenListByUser.size() > 1) {
             // The latest token is the first element in the sorted list
             Token latestToken = validTokenListByUser.get(0);
 
-//            for (Token token : validTokenListByUser) {
             for (int i = 1; i < validTokenListByUser.size(); i++) {
                 Token token = validTokenListByUser.get(i);
                 token.setLoggedOut(true);

@@ -63,16 +63,15 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-//                        req->req.requestMatchers("/login/**","/register/**")
 //                        req -> req.requestMatchers(
 //                                        "/api/v1/auth/authenticate",
 //                                        "/api/v1/auth/register"
 //                                )
                         req -> req.requestMatchers("/api/v1/auth/**")
                                 .permitAll()
-//                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-//                                .anyRequest()
-//                                .authenticated()
+                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .anyRequest()
+                                .authenticated()
                 )
                 .userDetailsService(userDetailsService)
                 .exceptionHandling(
@@ -88,17 +87,6 @@ public class SecurityConfig {
                         )
                 )
 //                .oauth2Login(Customizer.withDefaults())
-
-
-//                .exceptionHandling(
-//                        e -> e.accessDeniedHandler(customAccessDeniedHandler)
-//                                .authenticationEntryPoint(customAuthenticationEntryPoint))
-//
-//                        e -> e.accessDeniedHandler(
-//                                        (request, response, accessDeniedException)->response.setStatus(403)
-//                                )
-//                           .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-
                 .build();
     }
 

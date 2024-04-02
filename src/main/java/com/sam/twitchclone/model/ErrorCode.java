@@ -8,5 +8,7 @@ public enum ErrorCode {
     NOT_ACCEPTABLE,
     BAD_REQUEST,
     EMAIL_NOT_VALID,
-    METHOD_NOT_ALLOWED
+    METHOD_NOT_ALLOWED,
+
+    UNAUTHORIZED
 }
