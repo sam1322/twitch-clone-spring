@@ -66,13 +66,14 @@ public class AuthenticationService {
             String id_token = getIdTokenFromCode(request.getCode());
             GoogleIdToken idToken = VerifyIdToken(id_token);
             GoogleIdToken.Payload payload = idToken.getPayload();
-            if(!payload.getEmailVerified()){
+            if (!payload.getEmailVerified()) {
                 throw new IllegalArgumentException("Email not verified");
             }
             email = payload.getEmail();
-            userName = (String) payload.getUnknownKeys().getOrDefault("name","User");
-            userImage = (String) payload.getUnknownKeys().getOrDefault("picture","");
-            password = cryptoUtil.encodePassword(UUID.randomUUID().toString().substring(0, 11));
+            userName = (String) payload.getUnknownKeys().getOrDefault("name", "User");
+            userImage = (String) payload.getUnknownKeys().getOrDefault("picture", "");
+            password = UUID.randomUUID().toString().substring(0, 11);
+//            password = cryptoUtil.encodePassword(UUID.randomUUID().toString().substring(0, 11));
 
         }
 
@@ -112,12 +113,11 @@ public class AuthenticationService {
             String id_token = getIdTokenFromCode(request.getCode());
             GoogleIdToken idToken = VerifyIdToken(id_token);
             GoogleIdToken.Payload payload = idToken.getPayload();
-            if(!payload.getEmailVerified()){
+            if (!payload.getEmailVerified()) {
                 throw new IllegalArgumentException("Email not verified");
             }
             email = payload.getEmail();
-        }
-        else{
+        } else {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),

@@ -1,4 +1,4 @@
-package com.sam.twitchclone.config;
+package com.sam.twitchclone.config.ExceptionHandler;
 
 import com.sam.twitchclone.dao.postgres.model.Token;
 import com.sam.twitchclone.dao.postgres.repository.TokenRepository;

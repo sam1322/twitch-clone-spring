@@ -1,9 +1,12 @@
 package com.sam.twitchclone.config;
 
+import com.sam.twitchclone.config.ExceptionHandler.CustomAccessDeniedExceptionHandler;
+import com.sam.twitchclone.config.ExceptionHandler.CustomLogoutHandler;
 import com.sam.twitchclone.service.UserDetailsServiceImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -20,11 +23,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Order(1)
 public class SecurityConfig {
 
     private final UserDetailsServiceImp userDetailsService;
@@ -34,15 +38,24 @@ public class SecurityConfig {
 
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource apiConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // Allow specific origins (replace with your React app's URL):
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+
+        // Allow WebSocket methods (crucial for connection establishment):
+        configuration.setAllowedMethods(List.of("GET", "POST","DELETE","PUT", "PATCH","OPTIONS"));
+
+        // Include necessary headers:
+        configuration.setAllowedHeaders(List.of("Authorization", "Origin", "Content-Type", "Upgrade"));
+
+        // If using credentials (e.g., JWT tokens):
+        configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+
     }
 
 
@@ -50,17 +63,28 @@ public class SecurityConfig {
 //    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 //        http
 //                .cors(Customizer.withDefaults())
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().authenticated()
-//                )
-//                .oauth2Login(Customizer.withDefaults());
+//                .authorizeHttpRequests(
+//                        req -> req.requestMatchers("/api/v1/auth/**")
+//                                .permitAll()
+//                                .requestMatchers("/secured/**", "/secured/socket", "/secured/success")
+//                                .authenticated()
+//                                .anyRequest().authenticated()
+//                );
+////                .authorizeHttpRequests(authorize -> authorize
+////                        .anyRequest().authenticated()
+////                );
+////                .oauth2Login(Customizer.withDefaults());
 //        return http.build();
 //    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(Customizer.withDefaults())
+//                .cors(Customizer.withDefaults())
+//                .cors(cors->cors.disable())
+                .cors((cors) -> cors
+                        .configurationSource(apiConfigurationSource())
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
 //                        req -> req.requestMatchers(
@@ -69,6 +93,8 @@ public class SecurityConfig {
 //                                )
                         req -> req.requestMatchers("/api/v1/auth/**")
                                 .permitAll()
+                                .requestMatchers("/chat/**").permitAll()
+//                                .requestMatchers("/app/**/**", "/app/**/**/**", "/app/socket", "/app/success").authenticated()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()

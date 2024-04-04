@@ -1,4 +1,4 @@
-package com.sam.twitchclone.config;
+package com.sam.twitchclone.config.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
