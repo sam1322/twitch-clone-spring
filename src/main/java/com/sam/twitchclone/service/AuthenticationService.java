@@ -6,13 +6,13 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.sam.twitchclone.constant.enums.SignUpEnum;
 import com.sam.twitchclone.controller.auth.dto.AuthenticationRequest;
 import com.sam.twitchclone.controller.auth.dto.AuthenticationResponse;
 import com.sam.twitchclone.controller.auth.dto.RegisterRequest;
 import com.sam.twitchclone.dao.postgres.model.Token;
+import com.sam.twitchclone.dao.postgres.model.user.Role;
 import com.sam.twitchclone.dao.postgres.model.user.User;
 import com.sam.twitchclone.dao.postgres.repository.TokenRepository;
 import com.sam.twitchclone.dao.postgres.repository.UserRepository;
@@ -90,8 +90,8 @@ public class AuthenticationService {
                 .updatedTime(currentTime)
                 .email(email)
                 .password(passwordEncoder.encode(password))
-//                .role(Role.USER)
-                .role(request.getRole())
+                .role(Role.USER)
+//                .role(request.getRole())
                 .build();
         userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
@@ -128,7 +128,7 @@ public class AuthenticationService {
 
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("User not registered"));
         var jwtToken = jwtService.generateToken(user);
         log.info("generating token for login " + jwtToken);
 

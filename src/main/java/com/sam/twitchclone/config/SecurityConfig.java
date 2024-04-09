@@ -41,7 +41,10 @@ public class SecurityConfig {
     CorsConfigurationSource apiConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Allow specific origins (replace with your React app's URL):
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+//        configuration.setAllowedOrigins(List.of("*"));// doesn't work
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // works for only :3000
+//        configuration.setAllowedOrigins(List.of("http://localhost:3001")); // works for only :3001
+//        configuration.setAllowedOriginPatterns(List.of("*")); // works for all origin
 
         // Allow WebSocket methods (crucial for connection establishment):
         configuration.setAllowedMethods(List.of("GET", "POST","DELETE","PUT", "PATCH","OPTIONS"));
