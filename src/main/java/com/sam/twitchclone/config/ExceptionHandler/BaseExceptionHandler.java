@@ -17,7 +17,9 @@ public class BaseExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<BaseResponse> handleGenericException(Exception exception) {
         log.error("Unhandled error", exception);
-        BaseResponse body = BaseResponse.builder().error(true).errorCode(ErrorCode.INTERNAL_SERVER_ERROR).message("An unexpected error occurred").build();
+        BaseResponse body = BaseResponse.builder().error(true).errorCode(ErrorCode.INTERNAL_SERVER_ERROR)
+//                .message("An unexpected error occurred").build();
+                .message(exception.getMessage()).build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 
