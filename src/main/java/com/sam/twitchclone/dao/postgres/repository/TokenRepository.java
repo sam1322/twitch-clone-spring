@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, Integer> {
@@ -17,7 +18,8 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
         where t.user.id = :userId and t.loggedOut = false
         order by t.createdTime desc
 """)
-    List<Token> findAllValidTokenByUser(Integer userId);
+    List<Token> findAllValidTokenByUser(UUID userId);
+//    List<Token> findAllValidTokenByUser(Integer userId);
 
     Optional<Token> findByToken(String token);
 }

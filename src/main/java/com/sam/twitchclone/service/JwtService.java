@@ -24,12 +24,21 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public boolean isValid(String token, UserDetails user) {
-        String username = extractUsername(token);
+//    public boolean isValid(String token, UserDetails user) {
+//        String username = extractUsername(token);
+//
+//        boolean isValidToken = tokenRepository.findByToken(token).map(t -> !t.isLoggedOut()).orElse(false);
+//
+//        return username.equals(user.getUsername()) && !isTokenExpired(token) && isValidToken;
+////        return username.equals(user.getUsername()) && !isTokenExpired(token) && isValidToken;
+//    }
+    public boolean isValid(String token, User user) {
+        String username = extractUsername(token); // here we are extracting userId from the token
 
         boolean isValidToken = tokenRepository.findByToken(token).map(t -> !t.isLoggedOut()).orElse(false);
 
-        return username.equals(user.getUsername()) && !isTokenExpired(token) && isValidToken;
+        return username.equals(String.valueOf(user.getId())) && !isTokenExpired(token) && isValidToken;
+//        return username.equals(user.getUsername()) && !isTokenExpired(token) && isValidToken;
     }
 
     private boolean isTokenExpired(String token) {
@@ -57,7 +66,8 @@ public class JwtService {
     public String generateToken(User user) {
         String token = Jwts
                 .builder()
-                .subject(user.getUsername())
+//                .subject(user.getUsername())
+                .subject(String.valueOf(user.getId()))  // here we  are storing userId in the subject
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .signWith(getSigninKey())

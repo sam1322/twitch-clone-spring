@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "_user")
@@ -22,16 +23,12 @@ import java.util.List;
 @Builder
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    private String userName;
+    private String fullName;
     private String userImage;
 
-//    @Column(name = "first_name")
-//    private String firstName;
-//    private String lastName;
-    //    private String username;
     private String email;
     private String password;
     //    private ZonedDateTime createdTime;

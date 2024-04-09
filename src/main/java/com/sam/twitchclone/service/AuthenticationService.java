@@ -84,7 +84,7 @@ public class AuthenticationService {
         Instant currentTime = timeUtil.getCurrentTime();
 
         User user = User.builder()
-                .userName(userName)
+                .fullName(userName)
                 .userImage(userImage)
                 .createdTime(currentTime)
                 .updatedTime(currentTime)
