@@ -94,7 +94,7 @@ public class SecurityConfig {
 //                                        "/api/v1/auth/authenticate",
 //                                        "/api/v1/auth/register"
 //                                )
-                        req -> req.requestMatchers("/api/v1/auth/**")
+                        req -> req.requestMatchers("/api/v1/auth/**" ,"/api/v1/onPublish" , "/api/v1/onPublishDone")
                                 .permitAll()
                                 .requestMatchers("/chat/**").permitAll()
 //                                .requestMatchers("/app/**/**", "/app/**/**/**", "/app/socket", "/app/success").authenticated()

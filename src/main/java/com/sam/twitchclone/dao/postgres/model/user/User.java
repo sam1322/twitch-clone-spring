@@ -1,5 +1,6 @@
 package com.sam.twitchclone.dao.postgres.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sam.twitchclone.dao.postgres.model.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "_user")
@@ -22,16 +24,12 @@ import java.util.List;
 @Builder
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    private String userName;
+    private String fullName;
     private String userImage;
 
-//    @Column(name = "first_name")
-//    private String firstName;
-//    private String lastName;
-    //    private String username;
     private String email;
     private String password;
     //    private ZonedDateTime createdTime;
@@ -39,10 +37,12 @@ public class User implements UserDetails {
     private Instant createdTime;
     private Instant updatedTime;
 
+
     @Enumerated(value = EnumType.STRING)
     Role role;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Token> tokens;
 
     @Override

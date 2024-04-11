@@ -1,5 +1,6 @@
 package com.sam.twitchclone.config.WebSocket;
 
+import com.sam.twitchclone.dao.postgres.model.user.User;
 import com.sam.twitchclone.service.JwtService;
 import com.sam.twitchclone.service.UserDetailsServiceImp;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -65,8 +65,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat");
         registry.addEndpoint("/chat")
-                .setAllowedOrigins("*")
-                .setAllowedOrigins("http://localhost:3000")
+//                .setAllowedOrigins("*")
+//                .setAllowedOrigins("http://localhost:3000")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
@@ -93,6 +93,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                try {
+
+                } catch (Exception error) {
+
+                }
                 log.info("Inside the websocket interceptor");
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
@@ -114,8 +119,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     System.out.println("Security Context : " + SecurityContextHolder.getContext().getAuthentication());
                     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         log.info("Inside the iff statement");
-                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                        System.out.println("Hello userdetails : " + userDetails.getUsername() );
+                        User userDetails = userDetailsService.loadUserByUsername(username);
+                        System.out.println("Hello userdetails : " + userDetails.getUsername());
                         if (jwtService.isValid(token, userDetails)) {
                             System.out.println("jwt token valid ");
                             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -126,6 +131,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //                                    new WebAuthenticationDetailsSource().buildDetails(request)
 //                            );
                             SecurityContextHolder.getContext().setAuthentication(authToken);
+//                            throw new AccessDeniedException("Invalid JWT");
+
                             return message;
                         }
 //                        else{
