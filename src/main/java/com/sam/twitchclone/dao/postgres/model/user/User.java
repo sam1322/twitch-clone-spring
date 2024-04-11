@@ -1,5 +1,6 @@
 package com.sam.twitchclone.dao.postgres.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sam.twitchclone.dao.postgres.model.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,10 +37,12 @@ public class User implements UserDetails {
     private Instant createdTime;
     private Instant updatedTime;
 
+
     @Enumerated(value = EnumType.STRING)
     Role role;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Token> tokens;
 
     @Override
