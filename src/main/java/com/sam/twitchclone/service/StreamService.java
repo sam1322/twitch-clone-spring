@@ -3,20 +3,19 @@ package com.sam.twitchclone.service;
 import com.sam.twitchclone.constant.enums.StreamStatus;
 import com.sam.twitchclone.constant.enums.VideoStatus;
 import com.sam.twitchclone.controller.stream.dto.StreamResponse;
+import com.sam.twitchclone.controller.stream.dto.VideoResponse;
 import com.sam.twitchclone.dao.postgres.model.Stream;
 import com.sam.twitchclone.dao.postgres.model.Video;
 import com.sam.twitchclone.dao.postgres.model.user.User;
 import com.sam.twitchclone.dao.postgres.repository.StreamRepository;
 import com.sam.twitchclone.dao.postgres.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +24,43 @@ public class StreamService {
     private final StreamRepository streamRepository;
     private final VideoRepository videoRepository;
     private final UserService userService;
+
+    public List<VideoResponse> getListofVideos() {
+        String userId = securityService.getUserInfo().getUserId();
+
+        List<Video> videoList = videoRepository.findVideoByUserId(UUID.fromString(userId), Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<VideoResponse> videoResponseList = new ArrayList<>();
+        for (Video video : videoList) {
+            videoResponseList.add(VideoResponse.builder()
+                    .videoId(video.getId())
+                    .createdAt(video.getCreatedAt())
+                    .updatedAt(video.getUpdatedAt())
+                    .videoUrl(video.getVideoUrl())
+                    .videoStatus(video.getVideoStatus())
+                    .build());
+        }
+
+        return videoResponseList;
+    }
+
+    public VideoResponse getVideo(String videoID) {
+        Optional<Video> video1 = videoRepository.findById(UUID.fromString(videoID));
+        if (video1.isEmpty()) {
+            throw new IllegalArgumentException("No such video found");
+        }
+
+        Video video = video1.get();
+        return VideoResponse.builder()
+                .videoId(video.getId())
+                .createdAt(video.getCreatedAt())
+                .updatedAt(video.getUpdatedAt())
+                .videoUrl(video.getVideoUrl())
+                .videoStatus(video.getVideoStatus())
+                .build();
+
+
+    }
+
 
     public String generateStreamKey() {
         String userId = securityService.getUserInfo().getUserId();
@@ -95,8 +131,11 @@ public class StreamService {
                 .createdAt(currentTIme)
                 .updatedAt(currentTIme)
                 .stream(stream1)
+                .user(stream1.getUser())
                 .videoStatus(VideoStatus.LIVE)
-                .videoUrl(streamUid + "/" + currentTIme.toString())
+                .videoUrl(streamUid + "_" + currentTIme.toEpochMilli())
+//                .videoUrl(currentTIme.toString())
+//                .videoUrl(streamUid + "/" + currentTIme.toString())
                 .build();
 
         Video video1 = videoRepository.save(video);
