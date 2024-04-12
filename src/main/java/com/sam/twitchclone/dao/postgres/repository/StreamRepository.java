@@ -10,10 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-//TODO - will fix this Repository interface later
-public interface StreamRepository extends JpaRepository<Stream, Integer> {
-
-    Optional<Stream> findById(UUID id);
+public interface StreamRepository extends JpaRepository<Stream, UUID> {
 
     Optional<List<Stream>> findByUserIdAndStatus(UUID userId, StreamStatus status);
 

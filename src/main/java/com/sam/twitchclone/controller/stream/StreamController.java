@@ -1,8 +1,8 @@
 package com.sam.twitchclone.controller.stream;
 
 import com.sam.twitchclone.controller.stream.dto.StreamResponse;
+import com.sam.twitchclone.controller.stream.dto.VideoResponse;
 import com.sam.twitchclone.dao.postgres.model.Video;
-import com.sam.twitchclone.model.BaseResponse;
 import com.sam.twitchclone.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("api")
@@ -22,21 +23,21 @@ public class StreamController {
     @Value("${rtmp.server.host}")
     private String rtmpServerHost;
 
-    @PostMapping("/v1/generate-key")
-    public ResponseEntity<BaseResponse> generateStreamKey() {
+    @PostMapping("/v1/generateKey")
+    public ResponseEntity<StreamResponse> generateStreamKey() {
 
         String streamKey = streamService.generateStreamKey();
-        return ResponseEntity.ok(BaseResponse.builder()
-                .message(streamKey)
+        return ResponseEntity.ok(StreamResponse.builder()
+                .streamKey(streamKey)
                 .build());
     }
 
     @GetMapping("/v1/streamKey")
-    public ResponseEntity<BaseResponse> getCurrentStreamKey() {
+    public ResponseEntity<StreamResponse> getCurrentStreamKey() {
 
         String streamKey = streamService.getStreamKey();
-        return ResponseEntity.ok(BaseResponse.builder()
-                .message(streamKey)
+        return ResponseEntity.ok(StreamResponse.builder()
+                .streamKey(streamKey)
                 .build());
     }
 
@@ -62,6 +63,16 @@ public class StreamController {
         log.info("Stream " + streamKey + " is closed");
         // Response is ignored
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/v1/stream/videos")
+    public ResponseEntity<List<VideoResponse>> getListOfVideos() {
+        return ResponseEntity.ok(streamService.getListofVideos());
+    }
+
+    @GetMapping("/v1/stream/videos/{videoId}")
+    public ResponseEntity<VideoResponse> getVideo( @PathVariable String videoId) {
+        return ResponseEntity.ok(streamService.getVideo(videoId));
     }
 
 }

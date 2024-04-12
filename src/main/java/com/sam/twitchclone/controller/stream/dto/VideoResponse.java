@@ -1,8 +1,8 @@
-package com.sam.twitchclone.dao.postgres.model;
+package com.sam.twitchclone.controller.stream.dto;
 
 import com.sam.twitchclone.constant.enums.VideoStatus;
-import com.sam.twitchclone.dao.postgres.model.user.User;
-import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,34 +12,20 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.UUID;
 
+
 @Data
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Video {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class VideoResponse {
+    private UUID videoId;
 
-    @NotNull
     private Instant createdAt;
-    @NotNull
     private Instant updatedAt;
 
 
     private String title;
     private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "stream_id")
-    @NotNull
-    private Stream stream;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @NotNull
-    private User user;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -47,7 +33,6 @@ public class Video {
 
     private double videoSize;
 
-    @NotNull
     private String videoUrl;
 
 
