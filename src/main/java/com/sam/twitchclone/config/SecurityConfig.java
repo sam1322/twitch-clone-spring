@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -47,7 +46,7 @@ public class SecurityConfig {
 //        configuration.setAllowedOriginPatterns(List.of("*")); // works for all origin
 
         // Allow WebSocket methods (crucial for connection establishment):
-        configuration.setAllowedMethods(List.of("GET", "POST","DELETE","PUT", "PATCH","OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"));
 
         // Include necessary headers:
         configuration.setAllowedHeaders(List.of("Authorization", "Origin", "Content-Type", "Upgrade"));
@@ -94,7 +93,12 @@ public class SecurityConfig {
 //                                        "/api/v1/auth/authenticate",
 //                                        "/api/v1/auth/register"
 //                                )
-                        req -> req.requestMatchers("/api/v1/auth/**" ,"/api/v1/onPublish" , "/api/v1/onPublishDone")
+                        req -> req.requestMatchers(
+                                        "/api/v1/auth/**",
+                                        "/api/v1/onPublish",
+                                        "/api/v1/onPublishDone",
+                                        "/api/v1/user/recommendations"
+                                )
                                 .permitAll()
                                 .requestMatchers("/chat/**").permitAll()
 //                                .requestMatchers("/app/**/**", "/app/**/**/**", "/app/socket", "/app/success").authenticated()

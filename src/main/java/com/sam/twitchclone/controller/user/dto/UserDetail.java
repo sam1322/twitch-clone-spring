@@ -1,4 +1,4 @@
-package com.sam.twitchclone.model;
+package com.sam.twitchclone.controller.user.dto;
 
 import com.sam.twitchclone.dao.postgres.model.user.Role;
 import lombok.AllArgsConstructor;

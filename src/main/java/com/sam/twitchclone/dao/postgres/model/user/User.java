@@ -27,11 +27,16 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(unique = true)
     private String fullName;
     private String userImage;
 
     private String email;
     private String password;
+    private String bio;
+    private boolean verified;
+
+
     //    private ZonedDateTime createdTime;
 //    private ZonedDateTime updatedTime;
     private Instant createdTime;
