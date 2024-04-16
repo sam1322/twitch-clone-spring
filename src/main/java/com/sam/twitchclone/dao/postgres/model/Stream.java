@@ -31,12 +31,12 @@ public class Stream {
     @Enumerated(EnumType.STRING)
     private StreamStatus status;
 
-    @ManyToOne
+    @ManyToOne( cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE,orphanRemoval = true)
     @JoinColumn(name = "video_id")
     private Video video;
 
