@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 //@Slf4j
 @Service
 public class SecurityService {
@@ -22,6 +24,13 @@ public class SecurityService {
             throw new IllegalStateException("User info requested but no security context available");
         }
         String subject = String.valueOf(authenticationFacade.getAuthentication().getName());
+        try {
+            UUID uuid = UUID.fromString(subject);
+            //do something
+        } catch (IllegalArgumentException exception) {
+            //handle the case where string is not valid UUID
+            subject = null;
+        }
         return UserInfo.builder().userId(subject).build();
     }
 

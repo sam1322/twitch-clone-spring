@@ -13,4 +13,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     //    @NonNull Optional<User> findById(@NonNull Integer id);
     Optional<User> findById(UUID uuid);
+
+    Optional<User> findByFullNameIgnoreCase(String fullName);
+
 }

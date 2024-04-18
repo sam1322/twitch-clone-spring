@@ -97,7 +97,8 @@ public class SecurityConfig {
                                         "/api/v1/auth/**",
                                         "/api/v1/onPublish",
                                         "/api/v1/onPublishDone",
-                                        "/api/v1/user/recommendations"
+                                        "/api/v1/user/recommendations",
+                                        "/api/v1/user/username/**"
                                 )
                                 .permitAll()
                                 .requestMatchers("/chat/**").permitAll()
