@@ -60,10 +60,6 @@ public class FollowerService {
             throw new IllegalArgumentException("User does not follow the specified user");
         }
         return true;
-//        return followerRepository.findBySrcFollowerId(followerId)
-//                .stream()
-//                .map(this::mapToFollowingDTO)
-//                .collect(Collectors.toList());
     }
 
     public Follower followUser(User srcFollower, User endFollower) {
@@ -81,8 +77,9 @@ public class FollowerService {
     public FollowerResponse followUser(UUID srcFollowerId, UUID endFollowerId) {
         Optional<Follower> existingFollower = followerRepository.findBySrcFollowerIdAndEndFollowerId(srcFollowerId, endFollowerId);
 
-        if (existingFollower.isPresent())
+        if (existingFollower.isPresent()) {
             throw new IllegalArgumentException("User is already following to the specified user");
+        }
 
         User srcFollower = userRepository.findById(srcFollowerId)
                 .orElseThrow(() -> new IllegalArgumentException("Follower user not found"));

@@ -1,6 +1,7 @@
 package com.sam.twitchclone.dao.postgres.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sam.twitchclone.dao.postgres.model.Block;
 import com.sam.twitchclone.dao.postgres.model.Follower;
 import com.sam.twitchclone.dao.postgres.model.Token;
 import jakarta.persistence.*;
@@ -54,6 +55,13 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "endFollower", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Follower> endFollowers = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "srcBlocker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Block> srcblockeders = new HashSet<>();
+
+    @OneToMany(mappedBy = "endBlocker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Block> endBlockers = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
