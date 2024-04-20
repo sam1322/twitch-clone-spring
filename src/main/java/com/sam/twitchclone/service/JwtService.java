@@ -7,7 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -17,14 +17,16 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-    private final String SECRET_KEY = "6027e725f42c75df0afb49076f5b4284c8d626b11ec9c0640efe06c64c597f2e";
+    @Value("${app.jwt.secret}")
+    private String SECRET_KEY;
     private final TokenRepository tokenRepository;
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-//    public boolean isValid(String token, UserDetails user) {
+    //    public boolean isValid(String token, UserDetails user) {
 //        String username = extractUsername(token);
 //
 //        boolean isValidToken = tokenRepository.findByToken(token).map(t -> !t.isLoggedOut()).orElse(false);

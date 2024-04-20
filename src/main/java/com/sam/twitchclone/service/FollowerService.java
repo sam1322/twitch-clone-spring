@@ -21,10 +21,19 @@ import java.util.stream.Collectors;
 public class FollowerService {
     private final FollowerRepository followerRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final SecurityService securityService;
     private final FollowerMapper followerMapper;
 
     //    public List<User> getFollowers(UUID followedId) {
+
+    public List<User> getEndFollowerList(UUID srcFollowerId) { // ie get the list of users the current user is following
+        return followerRepository.findBySrcFollowerId(srcFollowerId)
+                .stream()
+                .map(Follower::getEndFollower)
+                .collect(Collectors.toList());
+    }
+
     public List<FollowerDTO> getFollowers(UUID followedId) {
         return followerRepository.findByEndFollowerId(followedId)
                 .stream()
@@ -125,29 +134,22 @@ public class FollowerService {
     }
 
     private FollowerDTO mapToFollowingDTO(Follower follower) {
-        User followedUser = userRepository.findById(follower.getEndFollower().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Followed user not found"));
+//        User followedUser = userRepository.findById(follower.getEndFollower().getId())
+//                .orElseThrow(() -> new IllegalArgumentException("Followed user not found"));
+        User followedUser = userService.getUser(follower.getEndFollower().getId());
 
         return followerMapper.userToFollowerDto(followedUser);
 
-//        return FollowerDTO.builder()
-//                .userId(followedUser.getId())
-//                .fullName(followedUser.getFullName())
-//                .userImage(followedUser.getUserImage())
-//                .build();
     }
 
 
     private FollowerDTO mapToFollowerDTO(Follower follower) {
-        User followerUser = userRepository.findById(follower.getSrcFollower().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Follower user not found"));
+//        User followerUser = userRepository.findById(follower.getSrcFollower().getId())
+//                .orElseThrow(() -> new IllegalArgumentException("Follower user not found"));
 
+        User followerUser = userService.getUser(follower.getSrcFollower().getId());
 
         return followerMapper.userToFollowerDto(followerUser);
-//        return FollowerDTO.builder()
-//                .userId(followerUser.getId())
-//                .fullName(followerUser.getFullName())
-//                .userImage(followerUser.getUserImage())
-//                .build();
+
     }
 }
