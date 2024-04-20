@@ -1,6 +1,7 @@
 package com.sam.twitchclone.dao.postgres.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sam.twitchclone.dao.postgres.model.Follower;
 import com.sam.twitchclone.dao.postgres.model.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,9 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "_user")
@@ -46,9 +45,15 @@ public class User implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     Role role;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Token> tokens;
+
+    @OneToMany(mappedBy = "srcFollower", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Follower> srcFollowers = new HashSet<>();
+
+    @OneToMany(mappedBy = "endFollower", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Follower> endFollowers = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
