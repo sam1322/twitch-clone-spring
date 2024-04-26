@@ -1,6 +1,6 @@
 package com.sam.twitchclone.controller.user.dto;
 
-import com.sam.twitchclone.dao.postgres.model.user.Role;
+import com.sam.twitchclone.controller.stream.dto.StreamResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +19,6 @@ public class UserResponse {
     private String userName;
     private String userImage;
     private String bio;
-    private Role role;
+    //    private Role role;
+    private StreamResponse currentStream;
 }

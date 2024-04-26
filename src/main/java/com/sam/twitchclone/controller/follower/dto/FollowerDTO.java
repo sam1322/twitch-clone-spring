@@ -1,5 +1,6 @@
 package com.sam.twitchclone.controller.follower.dto;
 
+import com.sam.twitchclone.controller.stream.dto.StreamResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,4 +18,8 @@ public class FollowerDTO {
     private String fullName;
     private String email;
     private String userImage;
+    //    private Stream currentStream;
+//    private boolean live;
+    private StreamResponse currentStream;
 }
+
