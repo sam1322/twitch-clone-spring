@@ -3,6 +3,7 @@ package com.sam.twitchclone.dao.postgres.model.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sam.twitchclone.dao.postgres.model.Block;
 import com.sam.twitchclone.dao.postgres.model.Follower;
+import com.sam.twitchclone.dao.postgres.model.Stream;
 import com.sam.twitchclone.dao.postgres.model.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,24 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Token> tokens;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC") // Order by the createdAt field in descending order
+    @JsonIgnore
+    private List<Stream> streamList;
+
+    public Stream getLatestStream() {
+        return !streamList.isEmpty() ? streamList.get(0) : null;
+    }
+
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch=FetchType.LAZY , orphanRemoval = true)
+//    @JoinColumn(name = "stream_id")
+//    private Stream currentStream;
+
+//    @ManyToOne
+//    @JoinFormula(value = "(SELECT stream.id FROM stream " +
+//            "WHERE stream.id = id ORDER BY stream.created_at DESC LIMIT 1)")
+//    private Stream currentStream;
+
     @OneToMany(mappedBy = "srcFollower", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Follower> srcFollowers = new HashSet<>();
 
@@ -58,7 +77,7 @@ public class User implements UserDetails {
 
 
     @OneToMany(mappedBy = "srcBlocker", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Block> srcblockeders = new HashSet<>();
+    private Set<Block> srcBlockers = new HashSet<>();
 
     @OneToMany(mappedBy = "endBlocker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Block> endBlockers = new HashSet<>();

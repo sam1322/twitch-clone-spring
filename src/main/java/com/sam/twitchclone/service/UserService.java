@@ -1,15 +1,21 @@
 package com.sam.twitchclone.service;
 
+import com.sam.twitchclone.controller.stream.dto.StreamResponse;
 import com.sam.twitchclone.controller.user.dto.UserResponse;
+import com.sam.twitchclone.dao.postgres.model.Stream;
+import com.sam.twitchclone.dao.postgres.model.Video;
 import com.sam.twitchclone.dao.postgres.model.user.User;
 import com.sam.twitchclone.dao.postgres.repository.UserRepository;
+import com.sam.twitchclone.mapper.StreamMapper;
 import com.sam.twitchclone.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -18,6 +24,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final StreamMapper streamMapper;
 
 
     public User getUser(UUID userId) {
@@ -40,7 +47,15 @@ public class UserService {
             throw new IllegalArgumentException("user not found");
         }
         User user1 = user.get();
-        return userMapper.userToUserResponse(user1);
+        UserResponse userResponse = userMapper.userToUserResponse(user1);
+        Stream stream = user1.getLatestStream();
+        if (stream != null) {
+            Video video = stream.getLatestVideo();
+            StreamResponse streamResponse = streamMapper.streamToStreamResponse(stream);
+            streamResponse.setCurrentVideo(streamMapper.videoToVideoResponse(video));
+            userResponse.setCurrentStream(streamResponse);
+        }
+        return userResponse;
     }
 
     public UserResponse getUserDetail(String userId) {
@@ -56,6 +71,20 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public Stream getCurrentStream(User user) {
+        List<Stream> streams = user.getStreamList();
+        if (streams.isEmpty()) return null;
+//        streams.sort(Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Stream> newStream = streams.stream()
+                .sorted(Comparator.comparing(Stream::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+        return newStream.get(0);
     }
 
 }

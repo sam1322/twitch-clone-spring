@@ -49,6 +49,7 @@ public class Video {
 
     @NotNull
     private String videoUrl;
+    private String thumbnailUrl;
 
 
 }

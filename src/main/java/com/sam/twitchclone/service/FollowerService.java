@@ -3,10 +3,13 @@ package com.sam.twitchclone.service;
 import com.sam.twitchclone.controller.follower.dto.FollowerDTO;
 import com.sam.twitchclone.controller.follower.dto.FollowerResponse;
 import com.sam.twitchclone.dao.postgres.model.Follower;
+import com.sam.twitchclone.dao.postgres.model.Stream;
 import com.sam.twitchclone.dao.postgres.model.user.User;
 import com.sam.twitchclone.dao.postgres.repository.FollowerRepository;
+import com.sam.twitchclone.dao.postgres.repository.StreamRepository;
 import com.sam.twitchclone.dao.postgres.repository.UserRepository;
 import com.sam.twitchclone.mapper.FollowerMapper;
+import com.sam.twitchclone.mapper.StreamMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,8 @@ public class FollowerService {
     private final UserService userService;
     private final SecurityService securityService;
     private final FollowerMapper followerMapper;
+    private final StreamRepository streamRepository;
+    private final StreamMapper streamMapper;
 
     //    public List<User> getFollowers(UUID followedId) {
 
@@ -138,8 +143,12 @@ public class FollowerService {
 //                .orElseThrow(() -> new IllegalArgumentException("Followed user not found"));
         User followedUser = userService.getUser(follower.getEndFollower().getId());
 
-        return followerMapper.userToFollowerDto(followedUser);
-
+        FollowerDTO followerDTO = followerMapper.userToFollowerDto(followedUser);
+        Optional<Stream> currentStream = streamRepository.findFirstByUserIdOrderByCreatedAtDesc(followedUser.getId());
+        currentStream.ifPresent(stream -> followerDTO.setCurrentStream(streamMapper.streamToStreamResponse(stream)));
+//        currentStream.ifPresent(stream -> followerDTO.setLive(stream.isLive()));
+//        currentStream.ifPresent(followerDTO::setCurrentStream);
+        return followerDTO;
     }
 
 
