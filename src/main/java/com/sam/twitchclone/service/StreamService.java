@@ -64,7 +64,7 @@ public class StreamService {
 
     public String generateStreamKey() {
         String userId = securityService.getUserInfo().getUserId();
-        User user = userService.getUser(userId);
+        User user = userService.getUser(UUID.fromString(userId));
         Instant currentTime = Instant.now();
 
         Optional<List<Stream>> oldStreams = streamRepository.findByUserIdAndStatus(UUID.fromString(userId), StreamStatus.PAUSED);

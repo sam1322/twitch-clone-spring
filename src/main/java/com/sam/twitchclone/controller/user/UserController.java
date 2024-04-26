@@ -1,6 +1,7 @@
 package com.sam.twitchclone.controller.user;
 
 import com.sam.twitchclone.controller.user.dto.UserResponse;
+import com.sam.twitchclone.service.FollowerService;
 import com.sam.twitchclone.service.SecurityService;
 import com.sam.twitchclone.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final SecurityService securityService;
+    private final FollowerService followerService;
 
     @GetMapping("/v1/user/userId/{userId}")
     public ResponseEntity<UserResponse> getUserByUserId(@PathVariable String userId) {
@@ -34,11 +36,11 @@ public class UserController {
         return ResponseEntity.ok(userDetail);
     }
 
-    @GetMapping("/v1/user/recommendations")
-    public ResponseEntity<List<UserResponse>> getRecommendations() {
-        List<UserResponse> userDetailList = userService.getUserList();
-        return ResponseEntity.ok(userDetailList);
-    }
+//    @GetMapping("/v1/user/recommendations")
+//    public ResponseEntity<List<UserResponse>> getRecommendations() {
+//        List<UserResponse> userDetailList = userService.getUserList();
+//        return ResponseEntity.ok(userDetailList);
+//    }
 
     @GetMapping("/v1/user/username/{userName}")
     public ResponseEntity<UserResponse> getUserByName(@PathVariable String userName) {

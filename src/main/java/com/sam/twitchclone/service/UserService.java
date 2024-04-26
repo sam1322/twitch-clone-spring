@@ -18,18 +18,19 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final SecurityService securityService;
 
-    public User getUser(String userId) {
+
+    public User getUser(UUID userId) {
         checkArgument(userId != null, "user id cannot be null");
 
-        Optional<User> user = userRepository.findById(UUID.fromString(userId));
+        Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            throw new IllegalArgumentException("user not found");
+            throw new IllegalArgumentException("User not found");
         }
 
         return user.get();
     }
+
 
     public UserResponse getUserByName(String userName) {
         checkArgument(userName != null, "username cannot be null");
@@ -51,21 +52,10 @@ public class UserService {
         }
 
         return userMapper.userToUserResponse(user.get());
-//        return userMapper.userToUserDetail(user.get());
     }
 
-    public List<UserResponse> getUserList() {
-        String userId = securityService.getUserInfo().getUserId();
-        System.out.println("userId : " + userId);
-        // todo - only give users excluding the userId from which the api is called
-        List<User> userList = userRepository.findAll();
-        if (userList.isEmpty()) {
-            throw new IllegalArgumentException("No user found");
-        }
-
-        return userMapper.usertoUserResponseList(userList);
-//        return userMapper.userToUserDetail(user.get());
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
-
 
 }
