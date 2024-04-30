@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
@@ -27,10 +28,10 @@ public class StreamController {
     @PostMapping("/v1/stream/generateKey")
     public ResponseEntity<StreamResponse> generateStreamKey() {
 
-        StreamResponse streamResponse  = streamService.generateStreamKey();
+        StreamResponse streamResponse = streamService.generateStreamKey();
         return ResponseEntity.ok(streamResponse);
 
-    } 
+    }
 
     @GetMapping("/v1/stream/streamKey")
     public ResponseEntity<StreamResponse> getCurrentStreamKey() {
@@ -40,7 +41,7 @@ public class StreamController {
     }
 
     @PutMapping("/v1/stream/updateStreamKey")
-    public ResponseEntity<StreamResponse> updateStreamKey(@RequestBody StreamRequest request ) {
+    public ResponseEntity<StreamResponse> updateStreamKey(@RequestBody StreamRequest request) {
 
         StreamResponse streamResponse = streamService.updateStreamKey(request);
         return ResponseEntity.ok(streamResponse);
@@ -70,13 +71,13 @@ public class StreamController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/v1/stream/videos")
+    @GetMapping("/v1/stream/videos/all")
     public ResponseEntity<List<VideoResponse>> getListOfVideos() {
         return ResponseEntity.ok(streamService.getListofVideos());
     }
 
     @GetMapping("/v1/stream/videos/{videoId}")
-    public ResponseEntity<VideoResponse> getVideo( @PathVariable String videoId) {
+    public ResponseEntity<VideoResponse> getVideo(@PathVariable UUID videoId) {
         return ResponseEntity.ok(streamService.getVideo(videoId));
     }
 

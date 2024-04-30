@@ -14,8 +14,9 @@ import java.util.UUID;
 @Builder
 public class UserDetail {
     private UUID userId;
-    private String email;
-    private Boolean isVerified;
+    //    private String email;
     private String userName;
-    private Role role;
+    private String userImage;
+    private Boolean isVerified;
+//    private Role role;
 }

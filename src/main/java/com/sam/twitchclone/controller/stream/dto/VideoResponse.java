@@ -1,6 +1,7 @@
 package com.sam.twitchclone.controller.stream.dto;
 
 import com.sam.twitchclone.constant.enums.VideoStatus;
+import com.sam.twitchclone.controller.user.dto.UserDetail;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
@@ -35,5 +36,8 @@ public class VideoResponse {
 
     private String videoUrl;
 
+    private String thumbnailUrl;
+
+    private UserDetail user;
 
 }

@@ -1,6 +1,7 @@
 package com.sam.twitchclone.controller.user;
 
 import com.sam.twitchclone.controller.user.dto.UserResponse;
+import com.sam.twitchclone.dao.postgres.model.user.User;
 import com.sam.twitchclone.service.FollowerService;
 import com.sam.twitchclone.service.SecurityService;
 import com.sam.twitchclone.service.UserService;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
@@ -45,6 +46,14 @@ public class UserController {
     @GetMapping("/v1/user/username/{userName}")
     public ResponseEntity<UserResponse> getUserByName(@PathVariable String userName) {
         UserResponse userDetail = userService.getUserByName(userName);
+        return ResponseEntity.ok(userDetail);
+    }
+
+    @GetMapping("/v1/user")
+    public ResponseEntity<User> getUser() {
+        String userId = securityService.getUserInfo().getUserId();
+
+        User userDetail = userService.getUser(UUID.fromString(userId));
         return ResponseEntity.ok(userDetail);
     }
 

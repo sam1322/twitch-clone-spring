@@ -10,6 +10,7 @@ import com.sam.twitchclone.dao.postgres.model.user.User;
 import com.sam.twitchclone.dao.postgres.repository.StreamRepository;
 import com.sam.twitchclone.dao.postgres.repository.VideoRepository;
 import com.sam.twitchclone.mapper.StreamMapper;
+import com.sam.twitchclone.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,13 @@ public class StreamService {
     private final VideoRepository videoRepository;
     private final UserService userService;
     private final StreamMapper streamMapper;
+    private final UserMapper userMapper;
 
     public List<VideoResponse> getListofVideos() {
-        String userId = securityService.getUserInfo().getUserId();
+//        String userId = securityService.getUserInfo().getUserId();
 
-        List<Video> videoList = videoRepository.findVideoByUserId(UUID.fromString(userId), Sort.by(Sort.Direction.DESC, "createdAt"));
+//        List<Video> videoList = videoRepository.findVideoByUserId(UUID.fromString(userId), Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Video> videoList = videoRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
         List<VideoResponse> videoResponseList = new ArrayList<>();
         for (Video video : videoList) {
             videoResponseList.add(VideoResponse.builder()
@@ -39,14 +42,15 @@ public class StreamService {
                     .updatedAt(video.getUpdatedAt())
                     .videoUrl(video.getVideoUrl())
                     .videoStatus(video.getVideoStatus())
+                    .user(userMapper.userToUserDetail(video.getUser()))
                     .build());
         }
 
         return videoResponseList;
     }
 
-    public VideoResponse getVideo(String videoID) {
-        Optional<Video> video1 = videoRepository.findById(UUID.fromString(videoID));
+    public VideoResponse getVideo(UUID videoID) {
+        Optional<Video> video1 = videoRepository.findById(videoID);
         if (video1.isEmpty()) {
             throw new IllegalArgumentException("No such video found");
         }
@@ -58,6 +62,7 @@ public class StreamService {
                 .updatedAt(video.getUpdatedAt())
                 .videoUrl(video.getVideoUrl())
                 .videoStatus(video.getVideoStatus())
+                .user(userMapper.userToUserDetail(video.getUser()))
                 .build();
     }
 
