@@ -47,7 +47,7 @@ public class User implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Token> tokens;
 

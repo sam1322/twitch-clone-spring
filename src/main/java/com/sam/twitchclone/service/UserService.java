@@ -1,6 +1,7 @@
 package com.sam.twitchclone.service;
 
 import com.sam.twitchclone.controller.stream.dto.StreamResponse;
+import com.sam.twitchclone.controller.user.dto.UserDetail;
 import com.sam.twitchclone.controller.user.dto.UserResponse;
 import com.sam.twitchclone.dao.postgres.model.Stream;
 import com.sam.twitchclone.dao.postgres.model.Video;
@@ -36,6 +37,17 @@ public class UserService {
         }
 
         return user.get();
+    }
+
+    public UserDetail getUserDetail(UUID userId) {
+        checkArgument(userId != null, "user id cannot be null");
+
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        return userMapper.userToUserDetail(user.get());
     }
 
 

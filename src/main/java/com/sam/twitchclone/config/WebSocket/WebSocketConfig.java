@@ -22,6 +22,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.util.UUID;
+
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
@@ -94,61 +96,45 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 try {
+                    log.info("Inside the websocket interceptor");
+                    StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                    if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
-                } catch (Exception error) {
+                        String authHeader = accessor.getFirstNativeHeader("Authorization");
 
-                }
-                log.info("Inside the websocket interceptor");
-                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                        String token = authHeader.substring(7);
 
-                    String authHeader = accessor.getFirstNativeHeader("Authorization");
+                        // TODO : add a try catch here and a logger to track whether the provided token is valid or invalid
+                        log.info("Going to extract username from token");
+                        String userId = jwtService.extractUsername(token); // if token is invalid it will give error and thus will not establish the STOMP connection
 
-                    String token = authHeader.substring(7);
 
-                    // TODO : add a try catch here and a logger to track whether the provided token is valid or invalid
-                    String username = jwtService.extractUsername(token); // if token is invalid it will give error and thus will not establish the STOMP connection
+                        // here userId is email
+//                        System.out.println("Security Context : " + SecurityContextHolder.getContext().getAuthentication());
+                        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                            log.info("Inside the iff statement");
+                            User userDetails = userDetailsService.loadUserByUserId(UUID.fromString(userId));
+                            System.out.println("Hello userdetails : " + userDetails.getUsername());
+                            if (jwtService.isValid(token, userDetails)) {
+                                System.out.println("jwt token valid ");
+                                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                        userDetails, null, userDetails.getAuthorities()
+                                );
+                                SecurityContextHolder.getContext().setAuthentication(authToken);
 
-//                    System.out.println("token : " + token + "userName : " + username);
-                    log.info("token :" + token);
-                    log.info("username :" + username);
-
-//                    String token = authHeader.substring(7);
-//                    String username = jwtService.extractUsername(token);
-                    // here username is email
-                    System.out.println("Security Context : " + SecurityContextHolder.getContext().getAuthentication());
-                    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                        log.info("Inside the iff statement");
-                        User userDetails = userDetailsService.loadUserByUsername(username);
-                        System.out.println("Hello userdetails : " + userDetails.getUsername());
-                        if (jwtService.isValid(token, userDetails)) {
-                            System.out.println("jwt token valid ");
-                            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                    userDetails, null, userDetails.getAuthorities()
-                            );
-
-//                            authToken.setDetails(
-//                                    new WebAuthenticationDetailsSource().buildDetails(request)
-//                            );
-                            SecurityContextHolder.getContext().setAuthentication(authToken);
-//                            throw new AccessDeniedException("Invalid JWT");
-
-                            return message;
+                                return message;
+                            }
                         }
-//                        else{
-//                            throw new AccessDeniedException("Invalid JWT token");
-//                        }
                     }
-
-//                    else {
-//                        throw new AccessDeniedException("Invalid JWT token");
-//                    }
+                } catch (Exception error) {
+                    log.error("Error in websocket interceptor : " + error.getMessage());
+                    throw new IllegalArgumentException("Invalid User");
                 }
+
                 return message;
             }
         });
     }
-
 //    @Override
 //    public void configureClientOutboundChannel(ChannelRegistration registration) {
 //        registration.taskExecutor().corePoolSize(4).maxPoolSize(8);
