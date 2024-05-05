@@ -1,17 +1,18 @@
 package com.sam.twitchclone.controller.user;
 
+import com.sam.twitchclone.controller.user.dto.UserDetail;
+import com.sam.twitchclone.controller.user.dto.UserRequest;
 import com.sam.twitchclone.controller.user.dto.UserResponse;
 import com.sam.twitchclone.dao.postgres.model.user.User;
+import com.sam.twitchclone.model.BaseResponse;
 import com.sam.twitchclone.service.FollowerService;
 import com.sam.twitchclone.service.SecurityService;
 import com.sam.twitchclone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -55,6 +56,20 @@ public class UserController {
 
         User userDetail = userService.getUser(UUID.fromString(userId));
         return ResponseEntity.ok(userDetail);
+    }
+
+    @PutMapping("/v1/user/updateUser")
+    public ResponseEntity<UserDetail> updateUser( @RequestBody UserRequest user) {
+//        String userId = securityService.getUserInfo().getUserId();
+        UserDetail updatedUser = userService.updateUserData( user);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PostMapping("/v1/user/userImage/upload")
+    public ResponseEntity<BaseResponse> uploadImage(@RequestParam("userImage") MultipartFile userImage) {
+        // Process the uploaded image
+        // ...
+        return ResponseEntity.ok(BaseResponse.builder().message("Image uploaded successfully").build());
     }
 
 }
