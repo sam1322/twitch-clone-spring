@@ -17,6 +17,6 @@ public class UserDetail {
     //    private String email;
     private String userName;
     private String userImage;
-    private Boolean isVerified;
+    private Boolean verified;
 //    private Role role;
 }

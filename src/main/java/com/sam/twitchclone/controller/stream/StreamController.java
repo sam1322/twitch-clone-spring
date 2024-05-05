@@ -2,6 +2,7 @@ package com.sam.twitchclone.controller.stream;
 
 import com.sam.twitchclone.controller.stream.dto.StreamRequest;
 import com.sam.twitchclone.controller.stream.dto.StreamResponse;
+import com.sam.twitchclone.controller.stream.dto.VideoRequest;
 import com.sam.twitchclone.controller.stream.dto.VideoResponse;
 import com.sam.twitchclone.dao.postgres.model.Video;
 import com.sam.twitchclone.service.StreamService;
@@ -79,6 +80,11 @@ public class StreamController {
     @GetMapping("/v1/stream/videos/{videoId}")
     public ResponseEntity<VideoResponse> getVideo(@PathVariable UUID videoId) {
         return ResponseEntity.ok(streamService.getVideo(videoId));
+    }
+
+    @PutMapping("/v1/stream/videos/{videoId}")
+    public ResponseEntity<VideoResponse> updateVideo(@PathVariable UUID videoId, @RequestBody VideoRequest request) {
+        return ResponseEntity.ok(streamService.updateVideo(videoId, request));
     }
 
 }

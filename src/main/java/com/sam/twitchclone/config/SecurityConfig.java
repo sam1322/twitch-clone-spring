@@ -99,7 +99,9 @@ public class SecurityConfig {
                                         "/api/v1/stream/onPublishDone",
                                         "/api/v1/user/recommendations",
                                         "/api/v1/user/username/**",
-                                        "/api/v1/stream/videos/**"
+                                        "/api/v1/stream/videos/**",
+                                        "/api/v1/chat/history/**",
+                                        "/api/v1/search"
                                 )
                                 .permitAll()
                                 .requestMatchers("/chat/**").permitAll()

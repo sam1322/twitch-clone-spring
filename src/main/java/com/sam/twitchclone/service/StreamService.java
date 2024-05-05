@@ -3,6 +3,7 @@ package com.sam.twitchclone.service;
 import com.sam.twitchclone.constant.enums.VideoStatus;
 import com.sam.twitchclone.controller.stream.dto.StreamRequest;
 import com.sam.twitchclone.controller.stream.dto.StreamResponse;
+import com.sam.twitchclone.controller.stream.dto.VideoRequest;
 import com.sam.twitchclone.controller.stream.dto.VideoResponse;
 import com.sam.twitchclone.dao.postgres.model.Stream;
 import com.sam.twitchclone.dao.postgres.model.Video;
@@ -42,11 +43,40 @@ public class StreamService {
                     .updatedAt(video.getUpdatedAt())
                     .videoUrl(video.getVideoUrl())
                     .videoStatus(video.getVideoStatus())
+                    .title(video.getTitle())
+                    .thumbnailUrl(video.getThumbnailUrl())
                     .user(userMapper.userToUserDetail(video.getUser()))
                     .build());
         }
 
         return videoResponseList;
+    }
+
+    public VideoResponse updateVideo(UUID videoID, VideoRequest request) {
+        Optional<Video> video1 = videoRepository.findById(videoID);
+        if (video1.isEmpty()) {
+            throw new IllegalArgumentException("No such video found");
+        }
+        boolean flag = false;
+        Video video = video1.get();
+
+        if (request.getTitle() != null && !request.getTitle().isEmpty()) {
+            video.setTitle(request.getTitle());
+            flag = true;
+        }
+        if (request.getThumbnailUrl() != null) {
+            video.setThumbnailUrl(request.getThumbnailUrl());
+            flag = true;
+        }
+
+        if (flag) {
+            video.setUpdatedAt(Instant.now());
+        } else {
+            throw new IllegalArgumentException("No values changed");
+        }
+
+        video = videoRepository.save(video);
+        return streamMapper.videoToVideoResponse(video);
     }
 
     public VideoResponse getVideo(UUID videoID) {
@@ -62,6 +92,8 @@ public class StreamService {
                 .updatedAt(video.getUpdatedAt())
                 .videoUrl(video.getVideoUrl())
                 .videoStatus(video.getVideoStatus())
+                .title(video.getTitle())
+                .thumbnailUrl(video.getThumbnailUrl())
                 .user(userMapper.userToUserDetail(video.getUser()))
                 .build();
     }
